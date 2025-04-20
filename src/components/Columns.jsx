@@ -3,7 +3,7 @@ import { Droppable } from "@hello-pangea/dnd";
 import Task from './Task';
 import AddTaskForm from './AddTask';
 
-const Column = ({ column, tasks }) => {
+const Column = ({ column, tasks, allTasks }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[500px]">
       <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600">
@@ -13,11 +13,11 @@ const Column = ({ column, tasks }) => {
       </div>
       
       {column.id === 'todo' && (
-        <div className="px-4 pt-3">
-          <AddTaskForm columnId={column.id} />
-        </div>
-      )}
-      
+  <div className="px-4 pt-3">
+    <AddTaskForm columnId={column.id} allTasks={allTasks} />
+  </div>
+)}
+
       <Droppable droppableId={column.id}>
         {(provided) => (
           <div
@@ -28,7 +28,7 @@ const Column = ({ column, tasks }) => {
           >
             <div className="space-y-3">
               {tasks.map((task, index) => (
-                <Task key={task.id} task={task} index={index} />
+                <Task key={task.id} task={task} index={index} allTasks={allTasks} />
               ))}
               {provided.placeholder}
             </div>

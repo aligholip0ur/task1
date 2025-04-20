@@ -9,7 +9,7 @@ const KanbanBoard = () => {
   const dispatch = useDispatch();
 
   const onDragEnd = (result) => {
-    const { source, destination } = result;
+    const { source, destination, draggableId } = result;
 
     if (!destination) return;
 
@@ -20,7 +20,36 @@ const KanbanBoard = () => {
       return;
     }
 
-    dispatch(moveTask({ source, destination }));
+    const task = tasks[draggableId];
+    const dependencies = task.dependencies || [];
+
+    // اعتبارسنجی وابستگی‌ها
+    if (destination.droppableId === "inprogress") {
+      const invalidDeps = dependencies.filter(depId => {
+        const depTask = tasks[depId];
+        return !depTask || depTask.status === 'todo';
+      });
+
+      if (invalidDeps.length > 0) {
+        const invalidTasks = invalidDeps.map(id => tasks[id]?.content || id);
+        alert(`این تسک به موارد زیر وابسته است که هنوز شروع نشده‌اند:\n${invalidTasks.join('\n')}`);
+        return;
+      }
+    }
+    else if (destination.droppableId === "done") {
+      const invalidDeps = dependencies.filter(depId => {
+        const depTask = tasks[depId];
+        return !depTask || depTask.status !== 'done';
+      });
+
+      if (invalidDeps.length > 0) {
+        const invalidTasks = invalidDeps.map(id => tasks[id]?.content || id);
+        alert(`این تسک به موارد زیر وابسته است که هنوز تکمیل نشده‌اند:\n${invalidTasks.join('\n')}`);
+        return;
+      }
+    }
+
+    dispatch(moveTask({ source, destination, draggableId }));
   };
 
   return (
@@ -29,7 +58,7 @@ const KanbanBoard = () => {
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Kanban Board
         </h1>
-        
+
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {Object.values(columns).map((column) => (
@@ -37,6 +66,7 @@ const KanbanBoard = () => {
                 key={column.id}
                 column={column}
                 tasks={column.taskIds.map((taskId) => tasks[taskId])}
+                allTasks={tasks}
               />
             ))}
           </div>
