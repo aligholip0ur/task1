@@ -49,9 +49,7 @@ const kanbanSlice = createSlice({
 
       const task = state.tasks[draggableId];
 
-      // 1. اگر تسک به عقب برمی‌گردد (از done به inprogress)
       if (source.droppableId === 'done' && destination.droppableId === 'inprogress') {
-        // تمام تسک‌هایی که به این تسک وابسته هستند باید از done به inprogress منتقل شوند
         Object.values(state.tasks).forEach(t => {
           if (t.dependencies && t.dependencies.includes(draggableId) && t.status === 'done') {
             const doneColumn = state.columns.done;
@@ -66,9 +64,7 @@ const kanbanSlice = createSlice({
           }
         });
       }
-      // 2. اگر تسک به عقب برمی‌گردد (از inprogress/done به todo)
       else if (destination.droppableId === 'todo') {
-        // تمام تسک‌هایی که به این تسک وابسته هستند باید به todo برگردند
         Object.values(state.tasks).forEach(t => {
           if (t.dependencies && t.dependencies.includes(draggableId)) {
             const currentColumn = state.columns[t.status];
@@ -84,20 +80,16 @@ const kanbanSlice = createSlice({
         });
       }
 
-      // 3. جابجایی تسک اصلی
       const sourceColumn = state.columns[source.droppableId];
       const destColumn = state.columns[destination.droppableId];
       const [removed] = sourceColumn.taskIds.splice(source.index, 1);
       destColumn.taskIds.splice(destination.index, 0, removed);
       task.status = destination.droppableId;
 
-      // 4. اگر تسک به جلو می‌رود (به inprogress/done)
       if (destination.droppableId !== 'todo') {
-        // بررسی تمام تسک‌هایی که این تسک به آنها وابسته است
         task.dependencies?.forEach(depId => {
           const depTask = state.tasks[depId];
           if (depTask && depTask.status === 'todo') {
-            // وابستگی باید حداقل در inprogress باشد
             const todoColumn = state.columns.todo;
             const inprogressColumn = state.columns.inprogress;
             

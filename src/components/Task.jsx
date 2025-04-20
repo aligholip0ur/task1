@@ -5,10 +5,9 @@ import { useSelector } from 'react-redux';
 const Task = ({ task, index }) => {
   const allTasks = useSelector(state => state.kanban.tasks);
 
-  // بررسی اینکه وابستگی‌ها انجام شده‌اند
   const isDependencyDone = (depId) => {
     const depTask = allTasks[depId];
-    return depTask && depTask.status === 'done';  // وضعیت وابستگی انجام شده باشد
+    return depTask && depTask.status === 'done';  
   };
 
   return (

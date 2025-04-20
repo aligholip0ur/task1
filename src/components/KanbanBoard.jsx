@@ -23,7 +23,6 @@ const KanbanBoard = () => {
     const task = tasks[draggableId];
     const dependencies = task.dependencies || [];
 
-    // اعتبارسنجی وابستگی‌ها
     if (destination.droppableId === "inprogress") {
       const invalidDeps = dependencies.filter(depId => {
         const depTask = tasks[depId];
@@ -32,7 +31,6 @@ const KanbanBoard = () => {
 
       if (invalidDeps.length > 0) {
         const invalidTasks = invalidDeps.map(id => tasks[id]?.content || id);
-        alert(`این تسک به موارد زیر وابسته است که هنوز شروع نشده‌اند:\n${invalidTasks.join('\n')}`);
         return;
       }
     }
@@ -44,7 +42,6 @@ const KanbanBoard = () => {
 
       if (invalidDeps.length > 0) {
         const invalidTasks = invalidDeps.map(id => tasks[id]?.content || id);
-        alert(`این تسک به موارد زیر وابسته است که هنوز تکمیل نشده‌اند:\n${invalidTasks.join('\n')}`);
         return;
       }
     }
